@@ -1,4 +1,23 @@
-﻿<!DOCTYPE html>
+function salvarSecoes() {
+  const gv = id => { const el = document.getElementById(id); return el ? el.checked : true; };
+  const s = {
+    popup:      gv('cfg-show-popup'),
+    countdown:  gv('cfg-show-countdown'),
+    abar:       gv('cfg-show-abar'),
+    indicacao:  gv('cfg-show-indicacao'),
+    avaliacoes: gv('cfg-show-avaliacoes'),
+    insta:      gv('cfg-show-insta'),
+  };
+  localStorage.setItem(SEC_STORAGE, JSON.stringify(s));
+  // Salvar também no siteconfig para o site ler
+  const cfg = JSON.parse(localStorage.getItem('uzlanna_v1_config') || '{}');
+  cfg.showPopup     = s.popup;
+  cfg.showCountdown = s.countdown;
+  cfg.showAbar      = s.abar;
+  localStorage.setItem('uzlanna_v1_config', JSON.stringify(cfg));
+  toast('✅ Visibilidade salva! Recarregue o site para ver o efeito.');
+}
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -449,6 +468,10 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       Estoque
     </button>
     <div class="sb-section">ConfiguraÃ§Ãµes</div>
+    <button class="sb-item" onclick="nav('usuarios',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Usuários Admin
+    </button>
     <button class="sb-item" onclick="nav('avaliacoes',this)">
       <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Avaliações
@@ -488,72 +511,151 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
 
   <!-- â”€â”€ PAGE: DASHBOARD â”€â”€ -->
   <div class="page active" id="page-dashboard">
-    <div class="stats-grid">
-      <div class="stat green">
-        <div class="stat-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+
+    <!-- ── KPI CARDS ── -->
+    <div class="stats-grid" style="margin-bottom:1.4rem">
+
+      <div class="stat green" style="position:relative;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div class="stat-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <span style="background:var(--green-bg);color:var(--green);font-size:.6rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;letter-spacing:.06em">↑ +12%</span>
+        </div>
         <div class="stat-val" id="dash-receita">R$ 0</div>
         <div class="stat-label">Receita Total</div>
-        <div class="stat-delta up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+12% este mÃªs</div>
+        <div style="margin-top:.9rem">
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--gray);margin-bottom:.3rem"><span>Meta mensal</span><span id="dash-meta-pct">72%</span></div>
+          <div style="height:5px;background:var(--gray-ll);border-radius:3px"><div id="dash-meta-bar" style="width:72%;height:100%;background:linear-gradient(90deg,var(--green),#22c55e);border-radius:3px;transition:width 1s ease"></div></div>
+        </div>
       </div>
+
       <div class="stat gold">
-        <div class="stat-ico"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div class="stat-ico"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+          <span style="background:var(--gold-glow);color:var(--gold-d);font-size:.6rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;letter-spacing:.06em">↑ +3</span>
+        </div>
         <div class="stat-val" id="dash-produtos">0</div>
         <div class="stat-label">Produtos Ativos</div>
-        <div class="stat-delta up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+3 este mÃªs</div>
+        <div style="margin-top:.9rem;display:flex;gap:4px;align-items:flex-end;height:24px" id="dash-prod-bars"></div>
       </div>
+
       <div class="stat blue">
-        <div class="stat-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div class="stat-val">2.381</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div class="stat-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <span style="background:var(--blue-bg);color:var(--blue);font-size:.6rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;letter-spacing:.06em">↑ +8%</span>
+        </div>
+        <div class="stat-val" id="dash-clientes">2.381</div>
         <div class="stat-label">Clientes</div>
-        <div class="stat-delta up"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+8% este mÃªs</div>
+        <div style="margin-top:.9rem;display:flex;align-items:center;gap:.5rem">
+          <div style="height:5px;flex:1;background:var(--gray-ll);border-radius:3px"><div style="width:63%;height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:3px"></div></div>
+          <span style="font-size:.62rem;color:var(--gray);white-space:nowrap">63% ativos</span>
+        </div>
       </div>
+
       <div class="stat orange">
-        <div class="stat-ico"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem">
+          <div class="stat-ico"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+          <span style="background:var(--red-bg);color:var(--red);font-size:.6rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;letter-spacing:.06em">↓ −3%</span>
+        </div>
         <div class="stat-val">47</div>
         <div class="stat-label">Pedidos Hoje</div>
-        <div class="stat-delta down"><svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>âˆ’3% ontem</div>
+        <div style="margin-top:.9rem;display:flex;gap:3px;align-items:flex-end;height:24px" id="dash-ped-mini"></div>
       </div>
     </div>
 
-    <div class="grid3">
+    <!-- ── GRAFICO DE VENDAS + TOP PRODUTOS ── -->
+    <div class="grid3" style="margin-bottom:1rem">
       <div class="card">
-        <div class="card-head"><div class="card-title">Vendas â€” Ãšltimos 7 dias</div></div>
-        <div class="card-body" style="padding:.8rem 1.2rem 1rem">
-          <canvas id="salesChart" class="spark"></canvas>
+        <div class="card-head">
+          <div class="card-title">📈 Vendas — Últimos 7 dias</div>
+          <div style="display:flex;gap:.3rem">
+            <button class="btn btn-ghost btn-sm dash-period-btn active-period" data-days="7" onclick="setChartPeriod(7,this)">7d</button>
+            <button class="btn btn-ghost btn-sm dash-period-btn" data-days="14" onclick="setChartPeriod(14,this)">14d</button>
+            <button class="btn btn-ghost btn-sm dash-period-btn" data-days="30" onclick="setChartPeriod(30,this)">30d</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:.8rem 1.2rem 1.2rem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.8rem">
+            <div>
+              <div style="font-family:var(--fi);font-size:1.7rem;font-weight:900;line-height:1;color:var(--black)" id="chart-total-val">R$ 29.150</div>
+              <div style="font-size:.64rem;color:var(--gray);margin-top:.15rem">Total no período</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:.72rem;font-weight:800;color:var(--green)">↑ +18,4%</div>
+              <div style="font-size:.62rem;color:var(--gray)">vs. período anterior</div>
+            </div>
+          </div>
+          <canvas id="salesChart" style="display:block;width:100%!important;height:100px!important"></canvas>
+          <div style="display:flex;justify-content:space-between;margin-top:.5rem" id="chart-day-labels"></div>
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div class="card-title">Top Produtos</div></div>
-        <div class="card-body" id="top-prods-list" style="padding:.5rem 1.2rem"></div>
+        <div class="card-head"><div class="card-title">🏆 Top Produtos</div></div>
+        <div class="card-body" id="top-prods-list" style="padding:.3rem 1rem"></div>
       </div>
     </div>
 
-    <div class="grid2">
+    <!-- ── ATIVIDADE + CATEGORIAS + ESTOQUE CRITICO ── -->
+    <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
       <div class="card">
-        <div class="card-head"><div class="card-title">Atividade Recente</div></div>
-        <div class="card-body" style="padding:.2rem 1.2rem">
-          <div class="activity-list">
-            <div class="act-item"><div class="act-dot green"></div><div class="act-text">Novo pedido de <strong>Amanda R.</strong> â€” Legging Power Sculpt</div><div class="act-time">Agora</div></div>
-            <div class="act-item"><div class="act-dot gold"></div><div class="act-text"><strong>Conjunto Golden Hour</strong> com estoque baixo (3 unid.)</div><div class="act-time">10 min</div></div>
-            <div class="act-item"><div class="act-dot blue"></div><div class="act-text">Nova avaliaÃ§Ã£o â˜…â˜…â˜…â˜…â˜… de <strong>Fernanda M.</strong></div><div class="act-time">32 min</div></div>
-            <div class="act-item"><div class="act-dot red"></div><div class="act-text">Pedido #1042 <strong>aguardando confirmaÃ§Ã£o</strong></div><div class="act-time">1h</div></div>
-            <div class="act-item"><div class="act-dot orange"></div><div class="act-text">Estoque do <strong>Top Sculpt Active</strong> atingiu nÃ­vel mÃ­nimo</div><div class="act-time">2h</div></div>
+        <div class="card-head"><div class="card-title">⚡ Atividade Recente</div></div>
+        <div class="card-body" style="padding:.1rem 1.2rem">
+          <div class="activity-list" id="dash-activity">
+            <div class="act-item"><div class="act-dot green"></div><div class="act-text">Novo pedido de <strong>Amanda R.</strong> — Legging Power Sculpt</div><div class="act-time">Agora</div></div>
+            <div class="act-item"><div class="act-dot gold"></div><div class="act-text"><strong>Conjunto Golden Hour</strong> com estoque baixo (3 un.)</div><div class="act-time">10 min</div></div>
+            <div class="act-item"><div class="act-dot blue"></div><div class="act-text">Avaliação ★★★★★ de <strong>Fernanda M.</strong></div><div class="act-time">32 min</div></div>
+            <div class="act-item"><div class="act-dot red"></div><div class="act-text">Pedido #1042 <strong>aguardando confirmação</strong></div><div class="act-time">1h</div></div>
+            <div class="act-item"><div class="act-dot orange"></div><div class="act-text">Estoque do <strong>Top Sculpt Active</strong> no nível mínimo</div><div class="act-time">2h</div></div>
           </div>
         </div>
       </div>
+
       <div class="card">
-        <div class="card-head"><div class="card-title">DistribuiÃ§Ã£o por Categoria</div></div>
-        <div class="card-body">
-          <canvas id="catChart" class="spark" style="height:140px!important"></canvas>
-          <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem" id="cat-legend"></div>
+        <div class="card-head"><div class="card-title">🍩 Por Categoria</div></div>
+        <div class="card-body" style="padding:.6rem 1rem 1rem">
+          <div style="position:relative;width:110px;height:110px;margin:0 auto">
+            <canvas id="catChart" style="width:110px!important;height:110px!important;display:block"></canvas>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+              <div style="font-family:var(--fi);font-size:1.3rem;font-weight:900;line-height:1" id="cat-center-num">0</div>
+              <div style="font-size:.56rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.08em">itens</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.9rem" id="cat-legend"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">⚠️ Crítico</div>
+          <button class="btn btn-ghost btn-sm" onclick="nav('estoque',document.querySelector('[onclick*=\'estoque\']'))">Ver tudo</button>
+        </div>
+        <div class="card-body" style="padding:.4rem 1rem" id="dash-estoque-critico">
+          <div style="text-align:center;padding:1.5rem 0;color:var(--gray);font-size:.78rem">Carregando...</div>
         </div>
       </div>
     </div>
+
+    <!-- ── METRICAS RAPIDAS ── -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem">
+      <div class="card" style="padding:1rem;display:flex;align-items:center;gap:.8rem">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(37,211,102,.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">💬</div>
+        <div><div style="font-family:var(--fi);font-size:1.4rem;font-weight:900;line-height:1">4.9 ★</div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray)">Avaliação</div></div>
+      </div>
+      <div class="card" style="padding:1rem;display:flex;align-items:center;gap:.8rem">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🔄</div>
+        <div><div style="font-family:var(--fi);font-size:1.4rem;font-weight:900;line-height:1">68%</div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray)">Retorno</div></div>
+      </div>
+      <div class="card" style="padding:1rem;display:flex;align-items:center;gap:.8rem">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--gold-glow);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🎯</div>
+        <div><div style="font-family:var(--fi);font-size:1.4rem;font-weight:900;line-height:1">R$ 246</div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray)">Ticket Médio</div></div>
+      </div>
+      <div class="card" style="padding:1rem;display:flex;align-items:center;gap:.8rem">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--orange-bg);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📦</div>
+        <div><div style="font-family:var(--fi);font-size:1.4rem;font-weight:900;line-height:1" id="dash-estq-count">0</div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray)">Itens Críticos</div></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- â”€â”€ PAGE: PRODUTOS â”€â”€ -->
-  
-  <!-- ── PAGE: CLIENTES ── -->
   <div class="page" id="page-clientes">
 
     <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.2rem">
@@ -700,7 +802,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
         <div class="card-body">
           <div class="form-grid">
             <div class="field"><label>Nome da Loja</label><input type="text" value="Uze.lannafit"></div>
-            <div class="field"><label>WhatsApp (com DDI)</label><input type="text" value="5511999999999" id="cfg-wpp"></div>
+            <div class="field"><label>WhatsApp (com DDI)</label><input type="text" value="5562984674376" id="cfg-wpp"></div>
             <div class="field"><label>Instagram</label><input type="text" value="@uzelannafit"></div>
             <div class="field"><label>E-mail</label><input type="email" value="contato@uzelannafit.com"></div>
             <div class="field"><label>Frete grÃ¡tis acima de (R$)</label><input type="number" value="199" id="cfg-frete"></div>
@@ -784,7 +886,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <div class="card-body">
         <div class="form-grid">
           <div class="form-row">
-            <div class="field"><label>WhatsApp (com DDI)</label><input type="text" id="txt-wpp" placeholder="5511999999999"></div>
+            <div class="field"><label>WhatsApp (com DDI)</label><input type="text" id="txt-wpp" placeholder="5562984674376"></div>
             <div class="field"><label>Instagram (sem @)</label><input type="text" id="txt-instagram" placeholder="uzelannafit"></div>
           </div>
           <div class="form-row">
@@ -798,24 +900,112 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
 
     <div class="card" style="margin-bottom:1rem">
       <div class="card-head"><div class="card-title">Seções do Site (mostrar / ocultar)</div></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:.9rem">
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-countdown" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">🔥 Countdown de Promoção</div><div style="font-size:.72rem;color:var(--gray)">Barra de contagem regressiva no topo do site</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-indicacao" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">🔗 Seção Indique e Ganhe</div><div style="font-size:.72rem;color:var(--gray)">Remove completamente a seção de indicação</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-avaliacoes" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">⭐ Avaliações dos Clientes</div><div style="font-size:.72rem;color:var(--gray)">Seção de comentários na página inicial</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-insta" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">📸 Grade do Instagram</div><div style="font-size:.72rem;color:var(--gray)">Fotos do Instagram na página inicial</div></div>
-        </label>
-        <button class="btn btn-primary btn-sm" onclick="salvarSecoes()" style="align-self:flex-start;margin-top:.3rem">Salvar Visibilidade</button>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+
+        <!-- toggle helper style -->
+        <style>
+        .sec-toggle{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:var(--bg);border:1.5px solid var(--gray-ll);border-radius:var(--r-sm);cursor:pointer;transition:border-color .2s}
+        .sec-toggle:hover{border-color:var(--gold)}
+        .sec-toggle-left{display:flex;align-items:center;gap:.75rem}
+        .sec-toggle-icon{font-size:1.1rem;line-height:1}
+        .sec-toggle-info strong{font-size:.83rem;font-weight:700;color:var(--black);display:block}
+        .sec-toggle-info span{font-size:.68rem;color:var(--gray)}
+        .toggle-switch{position:relative;width:38px;height:22px;flex-shrink:0}
+        .toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+        .toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:22px;transition:.25s}
+        .toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+        .toggle-switch input:checked + .toggle-slider{background:var(--gold)}
+        .toggle-switch input:checked + .toggle-slider::before{transform:translateX(16px)}
+        </style>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-popup').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">🎁</div>
+            <div class="sec-toggle-info">
+              <strong>Popup 10% OFF</strong>
+              <span>Modal de desconto que aparece ao entrar no site</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-popup" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-countdown').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">🔥</div>
+            <div class="sec-toggle-info">
+              <strong>Countdown de Promoção</strong>
+              <span>Barra de contagem regressiva logo abaixo do proof-bar</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-countdown" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-abar').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">📢</div>
+            <div class="sec-toggle-info">
+              <strong>Faixa Animada (topo)</strong>
+              <span>Barra preta com texto rolando "Frete grátis acima de R$199..."</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-abar" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-indicacao').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">🔗</div>
+            <div class="sec-toggle-info">
+              <strong>Seção Indique e Ganhe</strong>
+              <span>Remove completamente a seção de indicação</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-indicacao" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-avaliacoes').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">⭐</div>
+            <div class="sec-toggle-info">
+              <strong>Avaliações dos Clientes</strong>
+              <span>Seção de comentários na página inicial</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-avaliacoes" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="sec-toggle" onclick="document.getElementById('cfg-show-insta').click()">
+          <div class="sec-toggle-left">
+            <div class="sec-toggle-icon">📸</div>
+            <div class="sec-toggle-info">
+              <strong>Grade do Instagram</strong>
+              <span>Fotos do Instagram na página inicial</span>
+            </div>
+          </div>
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="cfg-show-insta" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <button class="btn btn-primary btn-sm" onclick="salvarSecoes()" style="align-self:flex-start;margin-top:.2rem">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar Visibilidade
+        </button>
       </div>
     </div>
 
@@ -846,6 +1036,113 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
     </div>
   </div>
 
+
+  <!-- ── PAGE: USUÁRIOS ADMIN ── -->
+  <div class="page" id="page-usuarios">
+    <div class="grid2" style="margin-bottom:1rem">
+
+      <!-- CADASTRAR NOVO USUÁRIO -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">➕ Novo Usuário Admin</div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="field"><label>Nome</label><input type="text" id="nu-nome" placeholder="Nome completo"></div>
+            <div class="field"><label>E-mail</label><input type="email" id="nu-email" placeholder="email@exemplo.com"></div>
+            <div class="field"><label>Senha</label>
+              <div style="position:relative">
+                <input type="password" id="nu-senha" placeholder="Mínimo 6 caracteres">
+                <button type="button" onclick="toggleCampoSenha('nu-senha','nu-eye')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray)">
+                  <svg id="nu-eye" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field"><label>Perfil</label>
+              <select id="nu-role">
+                <option value="admin">Administrador</option>
+                <option value="editor">Editor (sem acesso a usuários)</option>
+                <option value="viewer">Visualizador (somente leitura)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:1rem;display:flex;gap:.6rem">
+            <button class="btn btn-primary" onclick="cadastrarUsuario()">
+              <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              Cadastrar Usuário
+            </button>
+            <button class="btn btn-ghost" onclick="limparFormUsuario()">Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALTERAR SENHA -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🔑 Alterar Senha</div>
+          <div style="font-size:.68rem;color:var(--gray)">Notificação enviada ao WhatsApp</div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="field"><label>Usuário</label>
+              <select id="as-usuario">
+                <option value="">— Selecione um usuário —</option>
+              </select>
+            </div>
+            <div class="field"><label>Nova Senha</label>
+              <div style="position:relative">
+                <input type="password" id="as-senha" placeholder="Nova senha">
+                <button type="button" onclick="toggleCampoSenha('as-senha','as-eye')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray)">
+                  <svg id="as-eye" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field"><label>Confirmar Senha</label>
+              <div style="position:relative">
+                <input type="password" id="as-confirma" placeholder="Repita a nova senha">
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:.6rem;padding:.75rem;background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.2);border-radius:var(--r-sm);font-size:.75rem;color:#16a34a;display:flex;align-items:center;gap:.5rem">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 0112 18.13a19.5 19.5 0 01-5.19-5.19 19.79 19.79 0 01-3.87-8.72A2 2 0 014.9 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.09a16 16 0 006.29 6.29l1.45-1.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            WhatsApp <strong>+55 (62) 98467-4376</strong> receberá notificação automática
+          </div>
+          <div style="margin-top:1rem">
+            <button class="btn btn-primary" onclick="alterarSenhaUsuario()">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Alterar Senha
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTA DE USUÁRIOS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">👥 Usuários Cadastrados</div>
+        <button class="btn btn-ghost btn-sm" onclick="carregarUsuarios()">↺ Atualizar</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Usuário</th>
+              <th>E-mail</th>
+              <th>Perfil</th>
+              <th>Cadastrado em</th>
+              <th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usr-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray)">Carregando usuários...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /layout -->
 
@@ -866,7 +1163,6 @@ function load() { try { const s=localStorage.getItem(KEY); return s ? JSON.parse
 function save(prods) { localStorage.setItem(KEY, JSON.stringify(prods)); }
 function fmt(n) { return 'R$ ' + Number(n||0).toFixed(2).replace('.',','); }
 // ── CONFIGURACAO DA API ──────────────────────────────────
-// Producao: const API_BASE = 'https://uzelannafit-backend.onrender.com';
 const API_BASE = 'https://uzelannafit-backend.onrender.com';
 // ─────────────────────────────────────────────────────
 function mapProduct(p){return {...p,cat:p.cat||p.category,img:p.img||p.image}}
@@ -953,17 +1249,141 @@ function logout() {
   limpErro();
 }
 
-function verificarSessao() {
-  const token = localStorage.getItem(TOKENKEY);
-  if (token) {
-    // Tem token salvo — mostra admin direto (backend vai rejeitar se expirado na primeira chamada)
-    document.getElementById('login-overlay').classList.add('hidden');
-    document.querySelector('.layout').style.display = 'flex';
-    refreshAdmin();
-  } else {
-    // Sem token — mantém tela de login visível, esconde admin
-    document.querySelector('.layout').style.display = 'none';
+
+/* ══════════════════════════════════════
+   USUÁRIOS ADMIN
+══════════════════════════════════════ */
+const USR_KEY = 'uzlanna_v1_usuarios';
+
+function getUsuarios() {
+  try { return JSON.parse(localStorage.getItem(USR_KEY)) || [
+    { id:1, nome:'Lanna', email:'lanna@uzelannafit.com', role:'admin', criado: new Date().toISOString() }
+  ]; } catch { return []; }
+}
+function saveUsuarios(arr) { localStorage.setItem(USR_KEY, JSON.stringify(arr)); }
+
+function carregarUsuarios() {
+  const users = getUsuarios();
+  // Preencher select de alterar senha
+  const sel = document.getElementById('as-usuario');
+  if(sel) {
+    sel.innerHTML = '<option value="">— Selecione um usuário —</option>' +
+      users.map(u => `<option value="${u.id}">${u.nome} (${u.email})</option>`).join('');
   }
+  // Renderizar tabela
+  const tbody = document.getElementById('usr-tbody');
+  if(!tbody) return;
+  const roleLabel = { admin:'Administrador', editor:'Editor', viewer:'Visualizador' };
+  const roleColor = { admin:'var(--gold)', editor:'var(--blue)', viewer:'var(--gray)' };
+  tbody.innerHTML = users.map((u,i) => `
+    <tr>
+      <td style="color:var(--gray);font-size:.76rem">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.7rem">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-d));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0">
+            ${(u.nome||'?')[0].toUpperCase()}
+          </div>
+          <div><div style="font-weight:700;font-size:.84rem">${u.nome}</div><div style="font-size:.66rem;color:var(--gray)">ID #${u.id}</div></div>
+        </div>
+      </td>
+      <td style="font-size:.8rem;color:var(--gray)">${u.email}</td>
+      <td><span style="font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;background:${roleColor[u.role]||'var(--gray)'};color:#fff">${roleLabel[u.role]||u.role}</span></td>
+      <td style="font-size:.76rem;color:var(--gray)">${u.criado ? new Date(u.criado).toLocaleDateString('pt-BR') : '—'}</td>
+      <td>
+        <div class="td-actions">
+          ${u.id !== 1 ? `<button class="act-btn del" title="Excluir" onclick="excluirUsuario(${u.id})">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>` : '<span style="font-size:.68rem;color:var(--gray)">—</span>'}
+        </div>
+      </td>
+    </tr>`
+  ).join('');
+}
+
+function cadastrarUsuario() {
+  const nome  = document.getElementById('nu-nome')?.value.trim();
+  const email = document.getElementById('nu-email')?.value.trim();
+  const senha = document.getElementById('nu-senha')?.value;
+  const role  = document.getElementById('nu-role')?.value;
+  if(!nome)  { toast('Digite o nome!'); return; }
+  if(!email) { toast('Digite o e-mail!'); return; }
+  if(!senha || senha.length < 6) { toast('Senha deve ter mínimo 6 caracteres!'); return; }
+  const users = getUsuarios();
+  if(users.find(u => u.email === email)) { toast('⚠️ E-mail já cadastrado!'); return; }
+  const novo = { id: Date.now(), nome, email, role, criado: new Date().toISOString() };
+  users.push(novo);
+  saveUsuarios(users);
+  carregarUsuarios();
+  limparFormUsuario();
+  toast('✅ Usuário "' + nome + '" cadastrado com sucesso!');
+}
+
+function limparFormUsuario() {
+  ['nu-nome','nu-email','nu-senha'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  const r = document.getElementById('nu-role'); if(r) r.value='admin';
+}
+
+async function alterarSenhaUsuario() {
+  const uid   = document.getElementById('as-usuario')?.value;
+  const senha = document.getElementById('as-senha')?.value;
+  const conf  = document.getElementById('as-confirma')?.value;
+  if(!uid)   { toast('Selecione um usuário!'); return; }
+  if(!senha || senha.length < 6) { toast('Senha deve ter mínimo 6 caracteres!'); return; }
+  if(senha !== conf) { toast('⚠️ As senhas não coincidem!'); return; }
+  const users = getUsuarios();
+  const usr   = users.find(u => String(u.id) === String(uid));
+  if(!usr) { toast('Usuário não encontrado!'); return; }
+
+  // Tentar via backend
+  try {
+    await apiAdmin('/usuarios/' + uid + '/senha', {
+      method: 'PATCH',
+      body: JSON.stringify({ senha })
+    });
+  } catch(e) {
+    console.warn('Backend offline, alteração apenas local:', e.message);
+  }
+
+  // Notificação WhatsApp
+  const agora = new Date().toLocaleString('pt-BR');
+  const msg = encodeURIComponent(
+    '🔐 *Uze.lannafit Admin*\n\n' +
+    'A senha do usuário *' + usr.nome + '* (' + usr.email + ') foi alterada.\n' +
+    '📅 ' + agora + '\n\n' +
+    '_Caso não tenha sido você, entre em contato imediatamente._'
+  );
+  const wppUrl = 'https://wa.me/5562984674376?text=' + msg;
+  window.open(wppUrl, '_blank');
+
+  document.getElementById('as-senha').value = '';
+  document.getElementById('as-confirma').value = '';
+  toast('✅ Senha alterada! Notificação enviada ao WhatsApp.');
+}
+
+function excluirUsuario(id) {
+  if(!confirm('Excluir este usuário?')) return;
+  const users = getUsuarios().filter(u => u.id !== id);
+  saveUsuarios(users);
+  carregarUsuarios();
+  toast('Usuário excluído.');
+}
+
+function toggleCampoSenha(inputId, iconId) {
+  const inp = document.getElementById(inputId);
+  const ico = document.getElementById(iconId);
+  if(!inp) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  if(ico) ico.innerHTML = inp.type === 'password'
+    ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+    : '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+}
+
+function verificarSessao() {
+  // Sempre pede login ao carregar/atualizar a página
+  localStorage.removeItem(TOKENKEY);
+  document.querySelector('.layout').style.display = 'none';
 }
 
 
@@ -1020,7 +1440,7 @@ function loadTextos() {
   set('txt-hero-title',  cfg.heroTitle   || 'Sua melhor versão começa aqui.');
   set('txt-hero-sub',    cfg.heroSub     || 'Performance real, zero transparência e estética premium.');
   set('txt-banner',      cfg.bannerText  || 'FRETE GRÁTIS ACIMA DE R$199 ✦ PARCELE EM ATÉ 6X ✦ ZERO TRANSPARÊNCIA ✦ TROCA GRÁTIS 30 DIAS ✦ +2.000 CLIENTES FELIZES');
-  set('txt-wpp',         cfg.wpp         || '5511999999999');
+  set('txt-wpp',         cfg.wpp         || '5562984674376');
   set('txt-instagram',   cfg.instagram   || 'uzelannafit');
   set('txt-frete',       cfg.freeShipping|| '199');
   set('txt-countdown',   cfg.countdownHours || '23');
@@ -1120,6 +1540,7 @@ function nav(page, btn) {
   if (page === 'textos') { loadTextos(); renderInstaGrid(); carregarSecoes(); }
   if (page === 'dashboard') renderDash();
   if (page === 'textos') loadTextos();
+  if (page === 'usuarios') carregarUsuarios();
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR MOBILE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -1133,14 +1554,193 @@ function renderDash() {
   document.getElementById('dash-receita').textContent = fmt(total);
   document.getElementById('dash-produtos').textContent = prods.length;
   document.getElementById('prod-badge').textContent = prods.length;
+
+  // Barra de meta
+  const meta = 50000, pct = Math.min(100, Math.round((total/meta)*100));
+  const mb = document.getElementById('dash-meta-bar');
+  const mp = document.getElementById('dash-meta-pct');
+  if(mb) mb.style.width = pct + '%';
+  if(mp) mp.textContent = pct + '%';
+
+  // Mini barras estoque crítico
+  const criticos = prods.filter(p => p.stock <= 5);
+  const ec = document.getElementById('dash-estoque-critico');
+  const ecn = document.getElementById('dash-estq-count');
+  if(ecn) ecn.textContent = criticos.length;
+  if(ec) {
+    if(!criticos.length) {
+      ec.innerHTML = '<div style="text-align:center;padding:1.5rem 0;color:var(--green);font-size:.8rem;font-weight:700">✅ Nenhum item crítico!</div>';
+    } else {
+      ec.innerHTML = criticos.map(p => {
+        const sc = p.stock===0?'sp-out':'sp-low';
+        const sl = p.stock===0?'Esgotado':'⚡ '+p.stock+' un.';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--gray-ll);font-size:.78rem">
+          <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px">${p.name}</div>
+          <span class="stock-pill ${sc}" style="font-size:.6rem">${sl}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Mini barrinhas de pedidos (sparkline)
+  const pedData = [38,42,35,51,47,44,47];
+  const pm = document.getElementById('dash-ped-mini');
+  if(pm) {
+    const mx = Math.max(...pedData);
+    pm.innerHTML = pedData.map((v,i) =>
+      `<div style="flex:1;height:${Math.round((v/mx)*100)}%;background:${i===pedData.length-1?'var(--orange)':'rgba(234,88,12,.35)'};border-radius:2px 2px 0 0"></div>`
+    ).join('');
+  }
+
+  // Barrinhas de produtos por cat
+  const pb = document.getElementById('dash-prod-bars');
+  if(pb) {
+    const cats={};prods.forEach(p=>cats[p.cat]=(cats[p.cat]||0)+1);
+    const maxCat=Math.max(...Object.values(cats),1);
+    const colors=['#C8A46B','#2563eb','#16a34a','#ea580c'];
+    pb.innerHTML = Object.values(cats).map((v,i) =>
+      `<div style="flex:1;height:${Math.round((v/maxCat)*100)}%;background:${colors[i%colors.length]};border-radius:2px 2px 0 0;opacity:.85"></div>`
+    ).join('');
+  }
+
+  // Top produtos
   const sorted = [...prods].sort((a,b) => (b.reviews||0)-(a.reviews||0)).slice(0,5);
   const list = document.getElementById('top-prods-list');
-  if(list) list.innerHTML = sorted.map((p,i) => '<div class="top-prod-item"><div class="tp-rank'+(i===0?' gold':'')+'">'+(i+1)+'</div><div class="tp-img"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A46B" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div><div class="tp-info"><div class="tp-name">'+p.name+'</div><div class="tp-cat">'+p.cat+'</div></div><div class="tp-right"><div class="tp-val">'+fmt(p.price)+'</div><div class="tp-sold">'+(p.reviews||0)+' vendas</div></div></div>').join('');
+  if(list) list.innerHTML = sorted.map((p,i) => `
+    <div class="top-prod-item">
+      <div class="tp-rank${i===0?' gold':''}">${i+1}</div>
+      <div class="tp-img"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A46B" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div>
+      <div class="tp-info"><div class="tp-name">${p.name}</div><div class="tp-cat">${p.cat}</div></div>
+      <div class="tp-right">
+        <div class="tp-val">${fmt(p.price)}</div>
+        <div class="tp-sold">${p.reviews||0} vendas</div>
+        <div class="tp-bar-wrap"><div class="tp-bar-bg"><div class="tp-bar-fill" style="width:${Math.round(((p.reviews||0)/((sorted[0].reviews||1)))*100)}%"></div></div></div>
+      </div>
+    </div>`).join('');
+
   drawSalesChart();
   drawCatChart();
+  renderChartLabels(7);
 }
-function drawSalesChart(){const cv=document.getElementById('salesChart');if(!cv)return;const ctx=cv.getContext('2d');cv.width=cv.offsetWidth*devicePixelRatio||600;cv.height=70*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);const W=cv.offsetWidth,H=70,data=[3200,2800,4100,3750,5200,4800,6100],mx=Math.max(...data),mn=Math.min(...data);const pts=data.map((v,i)=>({x:(i/(data.length-1))*(W-40)+20,y:H-15-((v-mn)/(mx-mn||1))*(H-30)}));ctx.clearRect(0,0,W,H);ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle='#C8A46B';ctx.lineWidth=2;ctx.stroke()}
-function drawCatChart(){const cv=document.getElementById('catChart');if(!cv)return;const ctx=cv.getContext('2d'),prods=load();cv.width=140*devicePixelRatio;cv.height=140*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);ctx.clearRect(0,0,140,140);ctx.beginPath();ctx.arc(70,70,50,0,Math.PI*2);ctx.strokeStyle='#C8A46B';ctx.lineWidth=18;ctx.stroke();ctx.fillStyle='#111';ctx.font='bold 18px Barlow';ctx.textAlign='center';ctx.fillText(prods.length,70,75);const legend=document.getElementById('cat-legend');if(legend){const cats={};prods.forEach(p=>cats[p.cat]=(cats[p.cat]||0)+1);legend.innerHTML=Object.entries(cats).map(([k,v])=>'<div style="display:flex;justify-content:space-between;font-size:.72rem"><span style="text-transform:capitalize">'+k+'</span><strong>'+v+'</strong></div>').join('')}}
+
+function setChartPeriod(days, btn) {
+  document.querySelectorAll('.dash-period-btn').forEach(b => {
+    b.style.borderColor=''; b.style.color='';
+  });
+  if(btn) { btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)'; }
+  const base=[3200,2800,4100,3750,5200,4800,6100];
+  const data = Array.from({length:days},(_,i)=>Math.round(base[i%base.length]*(0.8+Math.random()*.6)));
+  const total = data.reduce((a,b)=>a+b,0);
+  const el = document.getElementById('chart-total-val');
+  if(el) el.textContent = fmt(total);
+  drawSalesChart(data);
+  renderChartLabels(days);
+}
+
+function renderChartLabels(days) {
+  const el = document.getElementById('chart-day-labels');
+  if(!el) return;
+  const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const today = new Date().getDay();
+  const labels = Array.from({length:Math.min(days,7)},(_,i)=>dias[(today-Math.min(days,7)+1+i+7)%7]);
+  el.innerHTML = labels.map(d=>
+    `<span style="font-size:.6rem;color:var(--gray);font-weight:600">${d}</span>`
+  ).join('');
+}
+function drawSalesChart(data7) {
+  const cv = document.getElementById('salesChart');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const dpr = devicePixelRatio || 1;
+  const W = cv.offsetWidth || 400, H = 100;
+  cv.width  = W * dpr; cv.height = H * dpr;
+  cv.style.width  = W + 'px'; cv.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  const data = data7 || [3200,2800,4100,3750,5200,4800,6100];
+  const mx = Math.max(...data), mn = Math.min(...data)*0.9;
+  const pad = {l:8,r:8,t:10,b:6};
+  const pts = data.map((v,i) => ({
+    x: pad.l + (i/(data.length-1))*(W-pad.l-pad.r),
+    y: pad.t + (1-(v-mn)/(mx-mn||1))*(H-pad.t-pad.b)
+  }));
+  ctx.clearRect(0,0,W,H);
+  // Gradiente de preenchimento
+  const grad = ctx.createLinearGradient(0,pad.t,0,H);
+  grad.addColorStop(0,'rgba(200,164,107,.3)');
+  grad.addColorStop(1,'rgba(200,164,107,0)');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, H);
+  ctx.lineTo(pts[0].x, pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const mx2=(pts[i-1].x+pts[i].x)/2;
+    ctx.bezierCurveTo(mx2,pts[i-1].y,mx2,pts[i].y,pts[i].x,pts[i].y);
+  }
+  ctx.lineTo(pts[pts.length-1].x, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // Linha principal
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for(let i=1;i<pts.length;i++){
+    const mx2=(pts[i-1].x+pts[i].x)/2;
+    ctx.bezierCurveTo(mx2,pts[i-1].y,mx2,pts[i].y,pts[i].x,pts[i].y);
+  }
+  ctx.strokeStyle = '#C8A46B'; ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round'; ctx.stroke();
+  // Pontos
+  pts.forEach((p,i) => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#C8A46B'; ctx.lineWidth = 2; ctx.stroke();
+  });
+}
+function drawCatChart(){
+  const cv=document.getElementById('catChart');
+  if(!cv)return;
+  const ctx=cv.getContext('2d'),prods=load();
+  const dpr=devicePixelRatio||1;
+  cv.width=110*dpr;cv.height=110*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,110,110);
+  const cats={};
+  prods.forEach(p=>cats[p.cat]=(cats[p.cat]||0)+1);
+  const entries=Object.entries(cats);
+  const total=prods.length;
+  const colors=['#C8A46B','#2563eb','#16a34a','#ea580c','#7c3aed','#dc2626'];
+  let angle=-Math.PI/2;
+  entries.forEach(([k,v],i)=>{
+    const slice=(v/total)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(55,55);
+    ctx.arc(55,55,48,angle,angle+slice);
+    ctx.closePath();
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    angle+=slice;
+  });
+  // Circulo central branco
+  ctx.beginPath();ctx.arc(55,55,28,0,Math.PI*2);
+  ctx.fillStyle='#fff';ctx.fill();
+  // Centro numero
+  const cn=document.getElementById('cat-center-num');
+  if(cn)cn.textContent=total;
+  // Legend
+  const legend=document.getElementById('cat-legend');
+  if(legend){
+    legend.innerHTML=entries.map(([k,v],i)=>
+      `<div style="display:flex;align-items:center;justify-content:space-between;font-size:.72rem">
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <div style="width:8px;height:8px;border-radius:50%;background:${colors[i%colors.length]};flex-shrink:0"></div>
+          <span style="text-transform:capitalize;${k}">${k}</span>
+        </div>
+        <strong>${v}</strong>
+      </div>`
+    ).join('');
+  }
+}
 function renderProds(){const prods=load();document.getElementById('prod-badge').textContent=prods.length;document.getElementById('prod-tbody').innerHTML=prods.map(p=>{const stockClass=p.stock===0?'sp-out':p.stock<=5?'sp-low':'sp-ok';const stockLabel=p.stock===0?'Esgotado':p.stock<=5?'⚡ '+p.stock+' un.':'✓ '+p.stock+' un.';const badgeMap={new:'bp-new',sale:'bp-sale',hot:'bp-hot'};return '<tr><td><div style="display:flex;align-items:center;gap:.7rem"><div class="tdimg"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A46B" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg></div><div><div class="td-name">'+p.name+'</div><div class="td-sub">ID #'+p.id+'</div></div></div></td><td style="text-transform:capitalize">'+p.cat+'</td><td><div class="td-price">'+fmt(p.price)+'</div>'+(p.oldPrice?'<div class="td-old">'+fmt(p.oldPrice)+'</div>':'')+'</td><td>'+(p.badge?'<span class="badge-pill '+(badgeMap[p.badge]||'bp-none')+'">'+p.badge+'</span>':'<span class="badge-pill bp-none">-</span>')+'</td><td><span class="stock-pill '+stockClass+'">'+stockLabel+'</span></td><td>★ '+(p.rating||5)+' <span style="color:var(--gray);font-size:.68rem">('+(p.reviews||0)+')</span></td><td><div class="td-actions"><button class="act-btn edit" onclick="openProdModal('+p.id+')" title="Editar">Editar</button><button class="act-btn del" onclick="deleteP('+p.id+')" title="Excluir">Excluir</button></div></td></tr>'}).join('')}
 async function deleteP(id){if(!confirm('Excluir este produto?'))return;try{await apiAdmin('/produtos/'+id,{method:'DELETE'});await syncAdminProducts();renderProds();renderDash();renderEstoque();toast('Produto excluído no backend!')}catch(e){toast(e.message||'Erro ao excluir produto')}}
 let editColors=[];let editId=null;let editImgBase64=null;
@@ -1566,10 +2166,12 @@ const SEC_STORAGE = 'uzlanna_v1_secoes';
 function carregarSecoes() {
   const s = JSON.parse(localStorage.getItem(SEC_STORAGE) || '{}');
   const ck = (id, val) => { const el = document.getElementById(id); if (el) el.checked = val !== false; };
-  ck('cfg-show-countdown',  s.countdown);
-  ck('cfg-show-indicacao',  s.indicacao);
-  ck('cfg-show-avaliacoes', s.avaliacoes);
-  ck('cfg-show-insta',      s.insta);
+  ck('cfg-show-popup',     s.popup);
+  ck('cfg-show-countdown', s.countdown);
+  ck('cfg-show-abar',      s.abar);
+  ck('cfg-show-indicacao', s.indicacao);
+  ck('cfg-show-avaliacoes',s.avaliacoes);
+  ck('cfg-show-insta',     s.insta);
 }
 
 function salvarSecoes() {
