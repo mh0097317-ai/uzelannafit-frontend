@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -264,6 +264,18 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
 @media(max-width:480px){.stats-grid{grid-template-columns:1fr}}
 
 @keyframes spin { to { transform: rotate(360deg); } }
+/* ── TOGGLE SWITCHES (STOG) ── */
+.stog{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem;background:var(--bg);border:1.5px solid var(--gray-ll);border-radius:var(--r-sm)}
+.stog:hover{border-color:var(--gold)}
+.stog-l{display:flex;align-items:center;gap:.65rem;flex:1}
+.stog-txt strong{font-size:.82rem;font-weight:700;display:block;line-height:1.3}
+.stog-txt span{font-size:.67rem;color:var(--gray)}
+.tsw{position:relative;width:40px;height:22px;flex-shrink:0}
+.tsw input{opacity:0;position:absolute;width:0;height:0}
+.tsl{position:absolute;inset:0;background:#ccc;border-radius:22px;cursor:pointer;transition:.25s}
+.tsl::before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tsw input:checked+.tsl{background:var(--gold)}
+.tsw input:checked+.tsl::before{transform:translateX(18px)}
 
 /* ── LOGIN OVERLAY ── */
 #login-overlay{
@@ -427,7 +439,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </button>
-    <div class="sb-section">CatÃ¡logo</div>
+    <div class="sb-section">Catálogo</div>
     <button class="sb-item" onclick="nav('produtos',this)">
       <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       Produtos
@@ -448,7 +460,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       Estoque
     </button>
-    <div class="sb-section">ConfiguraÃ§Ãµes</div>
+    <div class="sb-section">Configurações</div>
     <button class="sb-item" onclick="nav('categorias',this)">
       <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
       Categorias
@@ -465,10 +477,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Textos do Site
     </button>
-    <button class="sb-item" onclick="nav('config',this)">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      Configurações
-    </button>
+
   </nav>
   <div class="sb-footer">
     <div class="sb-user">
@@ -692,11 +701,11 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
             <tr>
               <th>Produto</th>
               <th>Categoria</th>
-              <th>PreÃ§o</th>
+              <th>Preço</th>
               <th>Badge</th>
               <th>Estoque</th>
-              <th>AvaliaÃ§Ã£o</th>
-              <th style="text-align:right">AÃ§Ãµes</th>
+              <th>Avaliação</th>
+              <th style="text-align:right">Ações</th>
             </tr>
           </thead>
           <tbody id="prod-tbody"></tbody>
@@ -728,12 +737,12 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
     <div class="card">
       <div class="card-head">
         <div class="card-title">Controle de Estoque</div>
-        <button class="btn btn-ghost btn-sm" onclick="toast('RelatÃ³rio gerado!')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>RelatÃ³rio</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('Relatório gerado!')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Relatório</button>
       </div>
       <div class="tbl-wrap">
         <table>
           <thead>
-            <tr><th>Produto</th><th>Categoria</th><th>Estoque</th><th>Status</th><th>AÃ§Ã£o</th></tr>
+            <tr><th>Produto</th><th>Categoria</th><th>Estoque</th><th>Status</th><th>Ação</th></tr>
           </thead>
           <tbody id="est-tbody"></tbody>
         </table>
@@ -741,18 +750,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
     </div>
   </div>
 
-  <!<div class="card" style="margin-bottom:1rem">
-      <div class="card-head"><div class="card-title">Secoes do Site</div></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:.55rem">
-        <style>.stog{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem;background:var(--bg);border:1.5px solid var(--gray-ll);border-radius:var(--r-sm)}.stog:hover{border-color:var(--gold)}.stog-l{display:flex;align-items:center;gap:.65rem;flex:1}.stog-txt strong{font-size:.82rem;font-weight:700;display:block;line-height:1.3}.stog-txt span{font-size:.67rem;color:var(--gray)}.tsw{position:relative;width:40px;height:22px;flex-shrink:0}.tsw input{opacity:0;position:absolute;width:0;height:0}.tsl{position:absolute;inset:0;background:#ccc;border-radius:22px;cursor:pointer;transition:.25s}.tsl::before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}.tsw input:checked+.tsl{background:var(--gold)}.tsw input:checked+.tsl::before{transform:translateX(18px)}</style>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🎁</span><div class="stog-txt"><strong>Popup 10% OFF</strong><span>Modal ao entrar no site</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-popup" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🔥</span><div class="stog-txt"><strong>Countdown</strong><span>Timer regressivo no topo</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-countdown" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">📢</span><div class="stog-txt"><strong>Faixa Animada</strong><span>Barra "Frete gratis acima de R$199..."</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-abar" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🔗</span><div class="stog-txt"><strong>Indique e Ganhe</strong><span>Secao de indicacao</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-indicacao" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">⭐</span><div class="stog-txt"><strong>Avaliacoes</strong><span>Comentarios na pagina inicial</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-avaliacoes" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">📸</span><div class="stog-txt"><strong>Instagram</strong><span>Grade de fotos na pagina inicial</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-insta" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
-      </div>
-    </div>AGE: AVALIAÇÕES ── -->
+  <!-- PAGE: AVALIAÇÕES ──
   <div class="page" id="page-avaliacoes">
     <div class="card">
       <div class="card-head">
@@ -825,25 +823,20 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
 
 
     <div class="card" style="margin-bottom:1rem">
-      <div class="card-head"><div class="card-title">Seções do Site (mostrar / ocultar)</div></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:.9rem">
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-countdown" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">🔥 Countdown de Promoção</div><div style="font-size:.72rem;color:var(--gray)">Barra de contagem regressiva no topo do site</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-indicacao" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">🔗 Seção Indique e Ganhe</div><div style="font-size:.72rem;color:var(--gray)">Remove completamente a seção de indicação</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-avaliacoes" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">⭐ Avaliações dos Clientes</div><div style="font-size:.72rem;color:var(--gray)">Seção de comentários na página inicial</div></div>
-        </label>
-        <label style="display:flex;align-items:center;gap:.8rem;cursor:pointer">
-          <input type="checkbox" id="cfg-show-insta" style="width:16px;height:16px;accent-color:var(--gold)">
-          <div><div style="font-weight:700;font-size:.85rem">📸 Grade do Instagram</div><div style="font-size:.72rem;color:var(--gray)">Fotos do Instagram na página inicial</div></div>
-        </label>
-        <button class="btn btn-primary btn-sm" onclick="salvarSecoes()" style="align-self:flex-start;margin-top:.3rem">Salvar Visibilidade</button>
+      <div class="card-head">
+        <div class="card-title">Seções do Site</div>
+        <button class="btn btn-primary btn-sm" onclick="salvarSecoes()">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar
+        </button>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:.55rem">
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🎁</span><div class="stog-txt"><strong>Popup 10% OFF</strong><span>Modal de desconto ao entrar no site</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-popup" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🔥</span><div class="stog-txt"><strong>Countdown de Promoção</strong><span>Barra de contagem regressiva no topo</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-countdown" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">📢</span><div class="stog-txt"><strong>Faixa Animada</strong><span>Barra "Frete grátis acima de R$199..."</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-abar" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">🔗</span><div class="stog-txt"><strong>Indique e Ganhe</strong><span>Seção de indicação na página inicial</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-indicacao" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">⭐</span><div class="stog-txt"><strong>Avaliações dos Clientes</strong><span>Comentários e estrelas na página inicial</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-avaliacoes" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
+        <div class="stog"><div class="stog-l"><span style="width:24px;flex-shrink:0">📸</span><div class="stog-txt"><strong>Grade do Instagram</strong><span>Fotos do Instagram na página inicial</span></div></div><label class="tsw"><input type="checkbox" id="cfg-show-insta" checked onchange="salvarSecoes()"><span class="tsl"></span></label></div>
       </div>
     </div>
 
@@ -1021,7 +1014,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
 </div><!-- /layout -->
 
 <script>
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STORAGE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ STORAGE ═══════════════ */
 const KEY = 'uzlanna_v1';
 const DEF = [
   { id:1, name:'Legging Power Sculpt', cat:'leggings', price:189.90, oldPrice:null, badge:'new', colors:['#1a1a1a','#C8A46B','#8B7355'], stock:5, img:null, rating:4.9, reviews:124, urgency:true, label:'Mais vendida' },
@@ -1257,7 +1250,7 @@ async function refreshAdmin(){
   document.getElementById('prod-badge').textContent = load().length;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOAST â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ TOAST ═══════════════ */
 function toast(msg) {
   document.getElementById('tmsg').textContent = msg;
   const t = document.getElementById('toast');
@@ -1265,8 +1258,8 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• NAVIGATION â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-const titles = { dashboard:'Dashboard', clientes:'Clientes', produtos:'Produtos', pedidos:'Pedidos', estoque:'Estoque', config:'ConfiguraÃ§Ãµes' };
+/* ═══════════════ NAVIGATION ═══════════════ */
+const titles = { dashboard:'Dashboard', clientes:'Clientes', produtos:'Produtos', pedidos:'Pedidos', estoque:'Estoque', textos:'Textos do Site', avaliacoes:'Avaliações', usuarios:'Usuários', categorias:'Categorias' };
 function nav(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
@@ -1286,11 +1279,11 @@ function nav(page, btn) {
   if (page === 'categorias') renderCategorias();
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR MOBILE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ SIDEBAR MOBILE ═══════════════ */
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DASHBOARD â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ DASHBOARD ═══════════════ */
 function renderDash(){var prods=load();var total=prods.reduce(function(acc,p){return acc+Number(p.price||0)*Math.max(1,Number(p.reviews||0))*.02;},0);document.getElementById('dash-receita').textContent=fmt(total);document.getElementById('dash-produtos').textContent=prods.length;document.getElementById('prod-badge').textContent=prods.length;var meta=50000,pct=Math.min(100,Math.round((total/meta)*100));var mb=document.getElementById('dash-meta-bar'),mp=document.getElementById('dash-meta-pct');if(mb)mb.style.width=pct+'%';if(mp)mp.textContent=pct+'%';var criticos=prods.filter(function(p){return p.stock<=5;});var ecn=document.getElementById('dash-estq-count');if(ecn)ecn.textContent=criticos.length;var ec=document.getElementById('dash-estoque-critico');if(ec)ec.innerHTML=!criticos.length?'<div style="text-align:center;padding:1.5rem 0;color:var(--green);font-size:.8rem;font-weight:700">Nenhum item critico!</div>':criticos.map(function(p){var sc=p.stock===0?'sp-out':'sp-low',sl=p.stock===0?'Esgotado':p.stock+' un.';return'<div style="display:flex;justify-content:space-between;align-items:center;padding:.48rem 0;border-bottom:1px solid var(--gray-ll);font-size:.78rem"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">'+p.name+'</div><span class="stock-pill '+sc+'" style="font-size:.6rem">'+sl+'</span></div>';}).join('');var pedData=[38,42,35,51,47,44,47];var pm=document.getElementById('dash-ped-mini');if(pm){var mx=Math.max.apply(null,pedData);pm.innerHTML=pedData.map(function(v,i){return'<div style="flex:1;height:'+Math.round((v/mx)*100)+'%;background:'+(i===pedData.length-1?'var(--orange)':'rgba(234,88,12,.35)')+';border-radius:2px 2px 0 0"></div>';}).join('');}var pb=document.getElementById('dash-prod-bars');if(pb){var cats2={};prods.forEach(function(p){cats2[p.cat]=(cats2[p.cat]||0)+1;});var maxC=Math.max.apply(null,Object.values(cats2).concat([1]));var cols=['#C8A46B','#2563eb','#16a34a','#ea580c'];pb.innerHTML=Object.values(cats2).map(function(v,i){return'<div style="flex:1;height:'+Math.round((v/maxC)*100)+'%;background:'+cols[i%cols.length]+';border-radius:2px 2px 0 0;opacity:.85"></div>';}).join('');}var sorted=[].concat(prods).sort(function(x,y){return(y.reviews||0)-(x.reviews||0);}).slice(0,5);var list=document.getElementById('top-prods-list');if(list)list.innerHTML=sorted.map(function(p,i){return'<div class="top-prod-item"><div class="tp-rank'+(i===0?' gold':'')+'">'+String(i+1)+'</div><div class="tp-info"><div class="tp-name">'+p.name+'</div><div class="tp-cat">'+p.cat+'</div></div><div class="tp-right"><div class="tp-val">'+fmt(p.price)+'</div><div class="tp-sold">'+(p.reviews||0)+' vendas</div></div></div>';}).join('');drawSalesChart();drawCatChart();renderChartLabels(7);}
 
 function drawSalesChart(data7){var cv=document.getElementById('salesChart');if(!cv)return;var ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1;var W=cv.offsetWidth||400,H=96;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);var data=data7||[3200,2800,4100,3750,5200,4800,6100];var mx=Math.max.apply(null,data),mn=Math.min.apply(null,data)*0.9;var pad={l:4,r:4,t:8,b:4};var pts=data.map(function(v,i){return{x:pad.l+(i/(data.length-1))*(W-pad.l-pad.r),y:pad.t+(1-(v-mn)/(mx-mn||1))*(H-pad.t-pad.b)};});ctx.clearRect(0,0,W,H);var g=ctx.createLinearGradient(0,pad.t,0,H);g.addColorStop(0,'rgba(200,164,107,.28)');g.addColorStop(1,'rgba(200,164,107,0)');ctx.beginPath();ctx.moveTo(pts[0].x,H);ctx.lineTo(pts[0].x,pts[0].y);for(var i=1;i<pts.length;i++){var m=(pts[i-1].x+pts[i].x)/2;ctx.bezierCurveTo(m,pts[i-1].y,m,pts[i].y,pts[i].x,pts[i].y);}ctx.lineTo(pts[pts.length-1].x,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(var j=1;j<pts.length;j++){var m2=(pts[j-1].x+pts[j].x)/2;ctx.bezierCurveTo(m2,pts[j-1].y,m2,pts[j].y,pts[j].x,pts[j].y);}ctx.strokeStyle='#C8A46B';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();pts.forEach(function(p){ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#C8A46B';ctx.lineWidth=2;ctx.stroke();});}
@@ -1302,7 +1295,7 @@ function openProdModal(id=null){editId=id;editImgBase64=null;const prods=load();
 function handleImgUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { toast('Imagem muito grande! MÃ¡x 2MB'); return; }
+  if (file.size > 2 * 1024 * 1024) { toast('Imagem muito grande! Máx 2MB'); return; }
   const reader = new FileReader();
   reader.onload = ev => {
     editImgBase64 = ev.target.result;
@@ -1328,7 +1321,7 @@ function refreshColorSwatches() {
   if (!sw) return;
   sw.innerHTML = editColors.map((c,i) => `
     <div class="cswatch" style="background:${c}" title="${c}">
-      <span class="cswatch-rm" onclick="removeColor(${i})">Ã—</span>
+      <span class="cswatch-rm" onclick="removeColor(${i})">×</span>
     </div>`).join('') +
     `<input type="color" id="color-picker" value="#C8A46B" style="display:none" onchange="addColor(this.value)">
      <button class="cswatch-add" onclick="document.getElementById('color-picker').click()">+</button>`;
@@ -1359,7 +1352,7 @@ async function saveProduct() {
     toast(editId ? 'Produto atualizado no backend!' : 'Produto criado no backend!');
   } catch (e) { toast(e.message || 'Erro ao salvar produto'); }
 }
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PEDIDOS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ PEDIDOS ═══════════════ */
 async function renderPedidos() {
   const tbody = document.getElementById('ped-tbody');
   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--gray)">Carregando pedidos...</td></tr>';
@@ -1417,12 +1410,12 @@ async function renderPedidos() {
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ESTOQUE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ ESTOQUE ═══════════════ */
 function renderEstoque() {
   const prods = load();
   document.getElementById('est-tbody').innerHTML = prods.map(p => {
     const sc = p.stock===0?'sp-out':p.stock<=5?'sp-low':'sp-ok';
-    const sl = p.stock===0?'Esgotado':p.stock<=5?`âš¡ CrÃ­tico (${p.stock})`:p.stock<=10?`âš ï¸ Baixo (${p.stock})`:`âœ“ OK (${p.stock})`;
+    const sl = p.stock===0?'Esgotado':p.stock<=5?`⚡ CrÃ­tico (${p.stock})`:p.stock<=10?`âš ï¸ Baixo (${p.stock})`:`âœ“ OK (${p.stock})`;
     return `<tr>
       <td><div class="td-name">${p.name}</div></td>
       <td style="text-transform:capitalize;color:var(--gray)">${p.cat}</td>
@@ -1465,13 +1458,13 @@ function closeModal() {
 document.getElementById('modal').addEventListener('click', e => { if (e.target===document.getElementById('modal')) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CONFIG â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-function saveConfig() { toast('ConfiguraÃ§Ãµes salvas! âœ…'); }
+/* ═══════════════ CONFIG ═══════════════ */
+function saveConfig() { toast('Configurações salvas! ✅'); }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• EXPORT CSV â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ EXPORT CSV ═══════════════ */
 function exportCSV() {
   const prods = load();
-  const hd = ['ID','Nome','Categoria','PreÃ§o','PreÃ§o Antigo','Estoque','Badge','AvaliaÃ§Ã£o'];
+  const hd = ['ID','Nome','Categoria','Preço','Preço Antigo','Estoque','Badge','Avaliação'];
   const rows = prods.map(p => [p.id, p.name, p.cat, p.price, p.oldPrice||'', p.stock, p.badge||'', p.rating]);
   const csv = [hd, ...rows].map(r => r.join(';')).join('\n');
   const a = document.createElement('a');
@@ -1481,7 +1474,7 @@ function exportCSV() {
   toast('CSV exportado!');
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INIT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════ INIT ═══════════════ */
 
 /* ══════════════════════════════════════
    CLIENTES
