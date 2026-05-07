@@ -1325,7 +1325,7 @@ async function subscribeNewsletter(){
   const email=document.getElementById('news-email')?.value.trim();
   if(!email||!email.includes('@')){toast('Digite um e-mail v?lido','err');return}
   try{
-    await fetch(API_BASE+'/clientes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:'Newsletter',email})});
+    await fetch(API_BASE+'/api/clientes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:'Newsletter',email})});
   }catch(e){console.info('Cadastro ser? tentado novamente em outro momento',e)}
   toast('Cadastro realizado! Cupom '+getCfg().coupon+' ativado');
   document.getElementById('news-email').value='';
