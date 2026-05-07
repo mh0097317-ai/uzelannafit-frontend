@@ -84,16 +84,9 @@ nav a:hover::after{left:.8rem;right:.8rem}
 .sr-price{font-size:.72rem;color:var(--gold);font-weight:700}
 
 /* ── ANNOUNCE ── */
-.abar{
-  background:var(--black);color:var(--gold);
-  text-align:center;padding:.38rem 0;
-  font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
-  position:fixed;top:60px;left:0;right:0;z-index:799;
-  overflow:hidden;animation:slideDown .5s ease 2.6s both;
-  border-bottom:1px solid rgba(200,164,107,.2);
-}
+.abar{background:var(--black);color:var(--gold);text-align:center;padding:.36rem 0;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;position:fixed;top:60px;left:0;right:0;z-index:799;overflow:hidden;animation:slideDown .5s ease 2.6s both;border-bottom:1px solid rgba(200,164,107,.18)}
 .abar-track{display:inline-block;white-space:nowrap;animation:marquee 22s linear infinite}
-@media(max-width:480px){.abar{font-size:.58rem;letter-spacing:.1em;top:56px}}
+@media(max-width:480px){.abar{top:56px;font-size:.56rem;letter-spacing:.09em}}
 @keyframes marquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 
 /* ── SITE ── */
@@ -337,56 +330,22 @@ main{padding-top:calc(60px + 34px)}
 .hero-badge-count{display:block;font-size:1.1rem;font-weight:900;letter-spacing:0;margin-top:.1rem}
 
 /* proof bar */
-/* proof-bar */
-.proof-bar{
-  background:linear-gradient(90deg,#111 0%,#1a1a1a 50%,#111 100%);
-  padding:.85rem 1.5rem;
-  display:flex;align-items:center;justify-content:center;
-  gap:0;flex-wrap:nowrap;overflow-x:auto;
-  border-bottom:1px solid rgba(200,164,107,.15);
-}
+.proof-bar{background:linear-gradient(90deg,#111,#1a1a1a,#111);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:0;overflow-x:auto;border-bottom:1px solid rgba(200,164,107,.15)}
 .proof-bar::-webkit-scrollbar{display:none}
-.proof-item{
-  display:flex;align-items:center;gap:.55rem;
-  font-size:.72rem;font-weight:600;color:#aaa;
-  white-space:nowrap;padding:.1rem 1.4rem;flex-shrink:0;
-}
+.proof-item{display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:600;color:#aaa;white-space:nowrap;padding:.15rem 1.2rem;flex-shrink:0}
 .proof-item strong{color:#fff}
 .proof-item svg{width:15px;height:15px;stroke:var(--gold);fill:none;stroke-width:2;flex-shrink:0}
-.proof-div{width:1px;height:22px;background:rgba(255,255,255,.12);flex-shrink:0}
-@media(max-width:640px){
-  .proof-bar{justify-content:flex-start;padding:.7rem 1rem;gap:0}
-  .proof-item{font-size:.68rem;padding:.1rem 1rem}
-}
+.proof-div{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0}
+@media(max-width:600px){.proof-bar{justify-content:flex-start;padding:.6rem .8rem}.proof-item{font-size:.65rem;padding:.1rem .8rem}}
 
 /* countdown */
-.countdown-bar{
-  background:linear-gradient(90deg,#1a1a1a 0%,#222 50%,#1a1a1a 100%);
-  padding:.65rem 1rem;
-  display:flex;align-items:center;justify-content:center;
-  gap:.8rem;flex-wrap:wrap;
-  border-bottom:1px solid rgba(200,164,107,.12);
-}
-.cd-label{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
-.cd-aproveite{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#fff;white-space:nowrap;
-  background:var(--gold);padding:.2rem .7rem;border-radius:3px}
-.cd-units{display:flex;gap:.4rem;align-items:center}
-.cd-unit{text-align:center;min-width:44px}
-.cd-num{
-  font-family:var(--fi);font-size:1.5rem;font-weight:900;color:#fff;
-  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);
-  border-radius:5px;padding:.1rem .4rem;letter-spacing:.02em;display:block;
-  transition:all .2s;
-}
-.cd-lbl{font-size:.5rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#555;margin-top:.2rem}
-.cd-sep{font-family:var(--fi);font-size:1.4rem;font-weight:900;color:var(--gold);line-height:1;margin-bottom:.4rem}
-@media(max-width:480px){
-  .countdown-bar{gap:.5rem;padding:.55rem .8rem}
-  .cd-label{font-size:.6rem;letter-spacing:.08em}
-  .cd-num{font-size:1.25rem;min-width:36px}
-  .cd-unit{min-width:36px}
-  .cd-aproveite{font-size:.6rem}
-}
+.countdown-bar{background:linear-gradient(90deg,#1a1a1a,#2d2d2d);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap}
+.cd-label{font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.cd-units{display:flex;gap:.5rem;align-items:center}
+.cd-unit{text-align:center}
+.cd-num{font-family:var(--fi);font-size:1.6rem;font-weight:900;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:.1rem .6rem;min-width:44px;display:inline-block;line-height:1.2}
+.cd-lbl{font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:#666;margin-top:.1rem}
+.cd-sep{font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:.9rem}
 
 /* section headers */
 .sh{text-align:center;margin-bottom:2.5rem}
@@ -751,7 +710,7 @@ footer{background:#0a0a0a;color:#fff;padding:4rem 1.5rem 5rem}
     </div>
   </header>
 
-  <div class="abar"><span class="abar-track" id="abar-text">✦ FRETE GRÁTIS ACIMA DE R$199 &nbsp;&nbsp; ✦ PARCELE EM ATÉ 6X &nbsp;&nbsp; ✦ ZERO TRANSPARÊNCIA &nbsp;&nbsp; ✦ TROCA GRÁTIS 30 DIAS &nbsp;&nbsp; ✦ +2.000 CLIENTES FELIZES &nbsp;&nbsp;</span></div>
+  <div class="abar" id="abar-strip"><span class="abar-track" id="abar-text">✦ FRETE GRÁTIS ACIMA DE R$199 &nbsp;&nbsp; ✦ PARCELE EM ATÉ 6X &nbsp;&nbsp; ✦ ZERO TRANSPARÊNCIA &nbsp;&nbsp; ✦ TROCA GRÁTIS 30 DIAS &nbsp;&nbsp; ✦ +2.000 CLIENTES FELIZES &nbsp;&nbsp;</span></div>
 
   <main>
     <!-- HERO -->
@@ -776,26 +735,7 @@ footer{background:#0a0a0a;color:#fff;padding:4rem 1.5rem 5rem}
 
     <!-- PROOF BAR -->
     <div class="proof-bar" id="proof-bar">
-      <div class="proof-item">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        <strong>4.9/5</strong>&nbsp;Avaliação
-      </div>
-      <div class="proof-div"></div>
-      <div class="proof-item">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        <strong>+2.000</strong>&nbsp;Clientes
-      </div>
-      <div class="proof-div"></div>
-      <div class="proof-item">
-        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        Frete grátis&nbsp;<strong id="proof-free-val">+R$199</strong>
-      </div>
-      <div class="proof-div"></div>
-      <div class="proof-item">
-        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        Troca grátis&nbsp;<strong>30 dias</strong>
-      </div>
-    </div>
+      <div class="proof-item"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><strong>4.9/5</strong> Avaliação</div>
       <div class="proof-div"></div>
       <div class="proof-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><strong>+2.000</strong> Clientes</div>
       <div class="proof-div"></div>
@@ -815,8 +755,6 @@ footer{background:#0a0a0a;color:#fff;padding:4rem 1.5rem 5rem}
         <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">Seg</div></div>
       </div>
       <div class="cd-aproveite">Aproveite!</div>
-    </div></div><div class="cd-sep">:</div><div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">Seg</div></div></div>
-      <div class="cd-label">Aproveite!</div>
     </div>
 
     <!-- COUPON BAR -->
@@ -1022,6 +960,7 @@ const ABKEY   = KEY+'_ab';
 const CARTKEY = KEY+'_cart';
 // ── CONFIGURAÇÃO DA API ──────────────────────────────────────────
 // Troque para o endereço real do seu backend quando for para produção:
+// const API_BASE = 'https://seudominio.com';
 const API_BASE = 'https://uzelannafit-backend.onrender.com';
 // ────────────────────────────────────────────────────────────────
 
@@ -1165,18 +1104,7 @@ function startCountdown(){
    DISCOUNT POPUP
 ══════════════════════════════════════ */
 setTimeout(()=>{
-  // Controle de seções via admin
-const _cfg = getCfg();
-// Popup 10% off
-if(!sessionStorage.getItem('popup_shown') && _cfg.showPopup !== false){
-  document.getElementById('discount-popup').classList.remove('hidden');
-}
-// Countdown bar
-const _cdBar = document.getElementById('countdown-bar');
-if(_cdBar) _cdBar.style.display = _cfg.showCountdown === false ? 'none' : '';
-// Faixa animada (abar)
-const _abar = document.querySelector('.abar');
-if(_abar) _abar.style.display = _cfg.showAbar === false ? 'none' : '';
+  (function(){try{var SEC=JSON.parse(localStorage.getItem('uzlanna_v1_secoes')||'{}');if(!sessionStorage.getItem('popup_shown')&&SEC.popup!==false)document.getElementById('discount-popup').classList.remove('hidden');var cd=document.getElementById('countdown-bar');if(cd)cd.style.display=SEC.countdown===false?'none':'';var ab=document.getElementById('abar-strip');if(ab)ab.style.display=SEC.abar===false?'none':'';}catch(e){}})();
 },3500);
 function closePopup(){document.getElementById('discount-popup').classList.add('hidden');sessionStorage.setItem('popup_shown','1')}
 function copyCoupon(){
