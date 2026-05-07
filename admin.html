@@ -1150,7 +1150,7 @@ async function apiAdmin(path,options={},retry=true){
   return data;
 }
 async function syncAdminProducts(){
-  const res=await fetch(API_BASE+'/api/produtos',{headers:{Accept:'application/json'}});
+  const res=await fetch(API_BASE+'/api/produtos?v='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});
   const data=await res.json();
   const prods=(Array.isArray(data)?data:(data.produtos||data.products||data.data||[])).map(mapProduct);
   save(prods);

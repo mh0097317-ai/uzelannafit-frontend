@@ -1020,11 +1020,12 @@ function saveWL(w){writeJSON(WLKEY,w.map(normalizeProduct))}
 function saveCart(){writeJSON(CARTKEY,cart.map(normalizeCartItem))}
 async function syncProductsFromApi(){
   try{
-    const res=await fetch(API_BASE+'/api/produtos',{headers:{'Accept':'application/json'}});
+    const res=await fetch(API_BASE+'/api/produtos?v='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}});
     if(!res.ok)throw new Error('API offline');
     const data=await res.json();
-    const products=(data.produtos||data.products||[]).map(normalizeProduct);
-    if(products.length){writeJSON(KEY,products);renderProducts(curFilter,curSize);}
+    const products=(Array.isArray(data)?data:(data.produtos||data.products||data.data||[])).map(normalizeProduct);
+    writeJSON(KEY,products);
+    renderProducts(curFilter,curSize);
   }catch(e){console.info('Usando produtos locais/cache:',e.message)}
 }
 
