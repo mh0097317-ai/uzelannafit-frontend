@@ -766,7 +766,7 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
     </div>
   </div>
 
-  <!-- PAGE: AVALIAÃ‡Ã•ES â”€â”€
+  <!-- PAGE: AVALIAÃ‡Ã•ES -->
   <div class="page" id="page-avaliacoes">
     <div class="card">
       <div class="card-head">
@@ -1692,63 +1692,74 @@ function exportClientesCSV() {
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 const AVAL_STORAGE = 'uzlanna_v1_avaliacoes';
 
-function getAvaliacoes() {
-  try { return JSON.parse(localStorage.getItem(AVAL_STORAGE)) || []; } catch { return []; }
+async function getAvaliacoes() {
+  try {
+    return await apiAdmin('/admin/avaliacoes?v=' + Date.now(), { method: 'GET' });
+  } catch (e) {
+    try { return JSON.parse(localStorage.getItem(AVAL_STORAGE)) || []; } catch { return []; }
+  }
 }
 
-function renderAdminAvaliacoes() {
+async function renderAdminAvaliacoes() {
   const lista = document.getElementById('aval-admin-lista');
   const lbl   = document.getElementById('aval-count-label');
   if (!lista) return;
-  const avals = getAvaliacoes();
+  lista.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem">Carregando avaliacoes...</div>';
+  const avals = await getAvaliacoes();
   if (lbl) lbl.textContent = avals.length + ' avaliacao' + (avals.length !== 1 ? 'oes' : '');
   if (!avals.length) {
     lista.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem">Nenhuma avaliacao enviada pelos clientes ainda.</div>';
     return;
   }
   const stars = n => '&#9733;'.repeat(Math.round(n)) + '&#9734;'.repeat(5 - Math.round(n));
-  lista.innerHTML = [...avals].reverse().map((a, i) => `
+  lista.innerHTML = avals.map((a) => `
     <div style="padding:1rem;border:1.5px solid var(--gray-ll);border-radius:var(--r-sm);background:${a.aprovado ? '#fff' : '#fffdf5'}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem">
         <div style="flex:1">
           <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.3rem;flex-wrap:wrap">
-            <span style="font-weight:800;font-size:.88rem">${a.nome || 'Anonimo'}</span>
-            <span style="color:var(--gold)">${stars(a.nota || 5)}</span>
-            <span style="font-size:.68rem;color:var(--gray)">${a.data || ''}</span>
+            <span style="font-weight:800;font-size:.88rem">${a.nome || a.name || 'Anonimo'}</span>
+            <span style="color:var(--gold)">${stars(a.nota || a.rating || 5)}</span>
+            <span style="font-size:.68rem;color:var(--gray)">${a.data ? new Date(a.data).toLocaleDateString('pt-BR') : ''}</span>
             <span style="font-size:.62rem;font-weight:700;padding:.15rem .5rem;border-radius:4px;background:${a.aprovado ? 'rgba(37,211,102,.1)' : 'rgba(255,160,0,.1)'};color:${a.aprovado ? 'var(--green)' : 'var(--orange)'}">
               ${a.aprovado ? 'Aprovada' : 'Pendente'}
             </span>
           </div>
-          <div style="font-size:.83rem;color:#333;line-height:1.5">${a.texto || ''}</div>
+          <div style="font-size:.83rem;color:#333;line-height:1.5">${a.texto || a.text || ''}</div>
           ${a.produto ? '<div style="font-size:.68rem;color:var(--gray);margin-top:.3rem">Produto: ' + a.produto + '</div>' : ''}
         </div>
         <div style="display:flex;flex-direction:column;gap:.4rem;flex-shrink:0">
-          ${!a.aprovado ? `<button class="btn btn-primary btn-sm" onclick="aprovarAval(${avals.length - 1 - i})">Aprovar</button>` : ''}
-          <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deletarAval(${avals.length - 1 - i})">Excluir</button>
+          ${!a.aprovado ? `<button class="btn btn-primary btn-sm" onclick="aprovarAval(${a.id})">Aprovar</button>` : ''}
+          <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deletarAval(${a.id})">Excluir</button>
         </div>
       </div>
     </div>`).join('');
 }
 
-function aprovarAval(idx) {
-  const avals = getAvaliacoes();
-  if (avals[idx]) { avals[idx].aprovado = true; localStorage.setItem(AVAL_STORAGE, JSON.stringify(avals)); renderAdminAvaliacoes(); toast('Avaliacao aprovada!'); }
+async function aprovarAval(id) {
+  try {
+    await apiAdmin('/admin/avaliacoes/' + id + '/aprovar', { method: 'PATCH' });
+    await renderAdminAvaliacoes();
+    toast('Avaliacao aprovada!');
+  } catch (e) { toast(e.message || 'Erro ao aprovar avaliacao'); }
 }
 
-function deletarAval(idx) {
+async function deletarAval(id) {
   if (!confirm('Excluir esta avaliacao?')) return;
-  const avals = getAvaliacoes();
-  avals.splice(idx, 1);
-  localStorage.setItem(AVAL_STORAGE, JSON.stringify(avals));
-  renderAdminAvaliacoes();
-  toast('Avaliacao excluida!');
+  try {
+    await apiAdmin('/admin/avaliacoes/' + id, { method: 'DELETE' });
+    await renderAdminAvaliacoes();
+    toast('Avaliacao excluida!');
+  } catch (e) { toast(e.message || 'Erro ao excluir avaliacao'); }
 }
 
-function limparAvaliacoes() {
+async function limparAvaliacoes() {
   if (!confirm('Excluir TODAS as avaliacoes? Isso nao pode ser desfeito.')) return;
-  localStorage.removeItem(AVAL_STORAGE);
-  renderAdminAvaliacoes();
-  toast('Todas as avaliacoes foram removidas.');
+  try {
+    await apiAdmin('/admin/avaliacoes', { method: 'DELETE' });
+    localStorage.removeItem(AVAL_STORAGE);
+    await renderAdminAvaliacoes();
+    toast('Todas as avaliacoes foram removidas.');
+  } catch (e) { toast(e.message || 'Erro ao limpar avaliacoes'); }
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•

@@ -1029,6 +1029,24 @@ async function syncProductsFromApi(){
   }catch(e){console.info('Usando produtos locais/cache:',e.message)}
 }
 
+async function syncReviewsFromApi(){
+  try{
+    const res=await fetch(API_BASE+'/api/avaliacoes?v='+Date.now(),{cache:'no-store',headers:{'Accept':'application/json'}});
+    if(!res.ok)throw new Error('API offline');
+    const data=await res.json();
+    const reviews=(Array.isArray(data)?data:(data.avaliacoes||data.reviews||data.data||[])).map(t=>({
+      id:t.id,
+      name:safeText(t.name||t.nome,80),
+      location:safeText(t.location||t.cidade,80),
+      rating:Math.min(5,Math.max(1,Number(t.rating||t.nota)||5)),
+      text:safeText(t.text||t.texto,240),
+      verified:!!(t.verified||t.aprovado)
+    }));
+    if(reviews.length)writeJSON(TKEY,reviews);
+    renderTestimonials();
+  }catch(e){console.info('Usando avaliacoes locais/cache:',e.message)}
+}
+
 /* ══════════════════════════════════════
    SVG ICONS
 ══════════════════════════════════════ */
@@ -1608,6 +1626,7 @@ startCountdown();
 renderProducts();
 syncProductsFromApi();
 renderTestimonials();
+syncReviewsFromApi();
 renderInstagram();
 initReferral();
 updateWLBadge();
@@ -1638,15 +1657,19 @@ function showAvalMsg(txt, cor) {
   setTimeout(() => el.style.display = 'none', 4500);
 }
 
-function enviarAvaliacao() {
+async function enviarAvaliacao() {
   const nome  = (document.getElementById('aval-nome')?.value || '').trim();
   const cidade= (document.getElementById('aval-cidade')?.value || '').trim();
   const texto = (document.getElementById('aval-texto')?.value || '').trim();
   if (!nome)              { showAvalMsg('Digite seu nome!', '#dc2626'); return; }
   if (texto.length < 10)  { showAvalMsg('Escreva pelo menos 10 caracteres!', '#dc2626'); return; }
-  const avals = JSON.parse(localStorage.getItem(AVAL_STORAGE) || '[]');
-  avals.push({ id: Date.now(), nome, location: cidade, nota: avalStar, texto, data: new Date().toLocaleDateString('pt-BR'), aprovado: false });
-  localStorage.setItem(AVAL_STORAGE, JSON.stringify(avals));
+  try {
+    await fetch(API_BASE+'/api/avaliacoes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,cidade,nota:avalStar,texto})});
+  } catch(e) {
+    const avals = JSON.parse(localStorage.getItem(AVAL_STORAGE) || '[]');
+    avals.push({ id: Date.now(), nome, location: cidade, nota: avalStar, texto, data: new Date().toLocaleDateString('pt-BR'), aprovado: false });
+    localStorage.setItem(AVAL_STORAGE, JSON.stringify(avals));
+  }
   document.getElementById('aval-nome').value = '';
   document.getElementById('aval-cidade').value = '';
   document.getElementById('aval-texto').value = '';
