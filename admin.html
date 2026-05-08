@@ -473,6 +473,10 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       AvaliaÃ§Ãµes
     </button>
+    <button class="sb-item" onclick="nav('whatsapp',this)">
+      <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      WhatsApp
+    </button>
     <button class="sb-item" onclick="nav('textos',this)">
       <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Textos do Site
@@ -780,6 +784,60 @@ canvas.spark{display:block;width:100%!important;height:70px!important}
       <div class="card-body">
         <div id="aval-admin-lista" style="display:flex;flex-direction:column;gap:.7rem">
           <div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem">Nenhuma avaliaÃ§Ã£o ainda.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: WHATSAPP -->
+  <div class="page" id="page-whatsapp">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Conexao WhatsApp</div>
+          <button class="btn btn-ghost btn-sm" onclick="carregarWhatsappStatus()">Atualizar</button>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;gap:.85rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.85rem;background:var(--bg);border-radius:var(--r-sm)">
+              <div>
+                <div style="font-size:.68rem;color:var(--gray);font-weight:800;letter-spacing:.14em;text-transform:uppercase">Instancia</div>
+                <div id="wpp-instance" style="font-weight:900;color:var(--black);margin-top:.15rem">-</div>
+              </div>
+              <span class="stock-pill sp-low" id="wpp-state">Carregando</span>
+            </div>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="gerarWhatsappQr()">Gerar QR Code</button>
+              <button class="btn btn-ghost btn-sm" onclick="carregarWhatsappStatus()">Ver Status</button>
+            </div>
+            <div id="wpp-alert" style="font-size:.74rem;color:var(--gray);line-height:1.45">
+              Use esta tela para conectar o WhatsApp da loja sem expor a chave da Evolution API no navegador.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">QR Code</div></div>
+        <div class="card-body">
+          <div id="wpp-qr-box" style="min-height:260px;display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--gray-ll);border-radius:var(--r-sm);background:var(--bg);padding:1rem;text-align:center;color:var(--gray);font-size:.8rem">
+            Clique em Gerar QR Code para conectar um aparelho.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Enviar Teste</div></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="field"><label>Telefone</label><input type="text" id="wpp-test-phone" placeholder="5562984674376"></div>
+            <div class="field"><label>Mensagem</label><input type="text" id="wpp-test-msg" value="Teste Uze.lannafit: WhatsApp conectado com sucesso."></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="btn btn-primary btn-sm" onclick="enviarWhatsappTeste()">Enviar Teste</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1156,6 +1214,71 @@ async function syncAdminProducts(){
   save(prods);
   return prods;
 }
+
+function setWhatsappStatus(state, instance) {
+  const elState = document.getElementById('wpp-state');
+  const elInstance = document.getElementById('wpp-instance');
+  if (elInstance) elInstance.textContent = instance || '-';
+  if (!elState) return;
+  const normalized = String(state || 'unknown').toLowerCase();
+  elState.textContent = normalized;
+  elState.className = 'stock-pill ' + (normalized === 'open' ? 'sp-ok' : normalized === 'close' ? 'sp-out' : 'sp-low');
+}
+
+function setWhatsappAlert(msg, danger=false) {
+  const el = document.getElementById('wpp-alert');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = danger ? 'var(--red)' : 'var(--gray)';
+}
+
+async function carregarWhatsappStatus() {
+  setWhatsappStatus('carregando', '-');
+  try {
+    const res = await apiAdmin('/admin/whatsapp/status', { method: 'GET' });
+    const data = res.data || {};
+    setWhatsappStatus(data.state, data.instance);
+    setWhatsappAlert(data.state === 'open' ? 'WhatsApp conectado e pronto para enviar mensagens.' : 'WhatsApp ainda nao esta conectado. Gere o QR Code e conecte pelo celular.');
+  } catch (e) {
+    setWhatsappStatus('erro', '-');
+    setWhatsappAlert(e.message || 'Erro ao consultar WhatsApp.', true);
+  }
+}
+
+async function gerarWhatsappQr() {
+  const box = document.getElementById('wpp-qr-box');
+  if (box) box.innerHTML = 'Gerando QR Code...';
+  try {
+    const res = await apiAdmin('/admin/whatsapp/qrcode', { method: 'GET' });
+    const data = res.data || {};
+    setWhatsappStatus('connecting', data.instance);
+    if (!data.base64) throw new Error('QR Code nao retornado pela Evolution API.');
+    if (box) {
+      box.innerHTML = '<div style="display:grid;gap:.7rem;justify-items:center"><img src="'+data.base64+'" alt="QR Code WhatsApp" style="width:230px;max-width:100%;border-radius:var(--r-sm);background:#fff;padding:.4rem;box-shadow:var(--sh)"><div style="font-size:.72rem;color:var(--gray)">Escaneie em WhatsApp > Aparelhos conectados.</div></div>';
+    }
+    setWhatsappAlert('QR Code gerado. Depois de escanear, clique em Ver Status.');
+  } catch (e) {
+    if (box) box.innerHTML = 'Nao foi possivel gerar o QR Code.';
+    setWhatsappAlert(e.message || 'Erro ao gerar QR Code.', true);
+  }
+}
+
+async function enviarWhatsappTeste() {
+  const telefone = (document.getElementById('wpp-test-phone')?.value || '').trim();
+  const mensagem = (document.getElementById('wpp-test-msg')?.value || '').trim();
+  if (!telefone) { toast('Informe o telefone para teste.'); return; }
+  try {
+    await apiAdmin('/admin/whatsapp/test', {
+      method: 'POST',
+      body: JSON.stringify({ telefone, mensagem })
+    });
+    toast('Mensagem de teste enviada!');
+    carregarWhatsappStatus();
+  } catch (e) {
+    toast(e.message || 'Erro ao enviar teste.');
+  }
+}
+
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PEDIDOS â€” ATUALIZAR STATUS
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -1275,7 +1398,7 @@ function toast(msg) {
 }
 
 /* â•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Â NAVIGATION â•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Ââ•Â */
-const titles = { dashboard:'Dashboard', clientes:'Clientes', produtos:'Produtos', pedidos:'Pedidos', estoque:'Estoque', textos:'Textos do Site', avaliacoes:'AvaliaÃ§Ãµes', usuarios:'UsuÃ¡rios', categorias:'Categorias' };
+const titles = { dashboard:'Dashboard', clientes:'Clientes', produtos:'Produtos', pedidos:'Pedidos', estoque:'Estoque', textos:'Textos do Site', avaliacoes:'AvaliaÃ§Ãµes', whatsapp:'WhatsApp', usuarios:'UsuÃ¡rios', categorias:'Categorias' };
 function nav(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
@@ -1288,6 +1411,7 @@ function nav(page, btn) {
   if (page === 'estoque') renderEstoque();
   if (page === 'pedidos') renderPedidos();
   if (page === 'avaliacoes') renderAdminAvaliacoes();
+  if (page === 'whatsapp') carregarWhatsappStatus();
   if (page === 'textos') { loadTextos(); renderInstaGrid(); carregarSecoes(); }
   if (page === 'dashboard') renderDash();
   if (page === 'textos') loadTextos();
