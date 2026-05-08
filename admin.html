@@ -1279,6 +1279,24 @@ async function enviarWhatsappTeste() {
   }
 }
 
+async function enviarClienteWhatsapp(id) {
+  const cliente = cliData.find(c => String(c.id) === String(id));
+  if (!cliente) { toast('Cliente nao encontrado.'); return; }
+  const telefone = cliente.telefone || cliente.phone || '';
+  if (!telefone || telefone === 'â€”') { toast('Cliente sem telefone.'); return; }
+  const nome = cliente.nome || cliente.name || 'cliente';
+  const mensagem = `Oi ${nome}! Passando pela Uze.lannafit para te avisar que seu cadastro esta ativo. Qualquer duvida, estamos por aqui.`;
+  try {
+    await apiAdmin('/admin/whatsapp/test', {
+      method: 'POST',
+      body: JSON.stringify({ telefone, mensagem })
+    });
+    toast('Mensagem enviada para ' + nome + '!');
+  } catch (e) {
+    toast(e.message || 'Erro ao enviar WhatsApp.');
+  }
+}
+
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PEDIDOS â€” ATUALIZAR STATUS
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -1787,7 +1805,7 @@ function renderClientes() {
     const cor=cores[(start+i)%cores.length];
     const ini=iniciais(nome);
     const telNum=tel!=='â€”'?tel.replace(/[^0-9]/g,''):'';
-    const wppLink=telNum?`<a href="https://wa.me/55${telNum}" target="_blank" style="color:var(--green);font-weight:700;font-size:.7rem;padding:.2rem .55rem;border:1px solid rgba(37,211,102,.35);border-radius:var(--r-sm);background:rgba(37,211,102,.06)">&#9742; WPP</a>`:'';
+    const wppLink=telNum?`<button type="button" onclick="enviarClienteWhatsapp('${c.id}')" style="cursor:pointer;color:var(--green);font-weight:700;font-size:.7rem;padding:.2rem .55rem;border:1px solid rgba(37,211,102,.35);border-radius:var(--r-sm);background:rgba(37,211,102,.06)">&#9742; WPP</button>`:'';
     return `<tr><td style="color:var(--gray);font-size:.76rem">${start+i+1}</td><td><div style="display:flex;align-items:center;gap:.7rem"><div style="width:34px;height:34px;border-radius:50%;background:${cor};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0">${ini}</div><div><div style="font-weight:700;font-size:.84rem">${nome}</div><div style="font-size:.68rem;color:var(--gray)">ID #${c.id||'?'}</div></div></div></td><td style="font-size:.8rem;color:var(--gray)">${email}</td><td style="font-size:.8rem">${tel}</td><td style="font-size:.76rem;color:var(--gray)">${data}</td><td><div style="display:flex;align-items:center;justify-content:flex-end;gap:.4rem">${wppLink}</div></td></tr>`;
   }).join('');
   const info=document.getElementById('cli-pag-info');
